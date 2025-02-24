@@ -140,13 +140,13 @@ export function EditorSection({ ...props }: EditorSectionProps) {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
-              Project Setup
+                Project Setup
             </h3>
-            <Switch
-              checked={props.openSections.project}
-              onCheckedChange={() => toggleSection("project")}
-            />
-          </div>
+      <Switch
+        checked={props.openSections.project}
+        onCheckedChange={() => toggleSection("project")}
+        />
+  </div>
 
           {/* Content conditionally rendered */}
           {props.openSections.project && (

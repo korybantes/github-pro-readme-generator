@@ -4,14 +4,19 @@ import { EditorSection } from './editor-section';
 import { PreviewSection } from './preview-section';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Copy, Download, Github, Moon, Sun, Star, Trash } from 'lucide-react';
+import { Copy, Download, Github, Moon, Sun, Star, Trash, Undo, Redo } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-// For PDF export, ensure you install html2pdf.js: npm install html2pdf.js
-import html2pdf from 'html2pdf.js';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import * as html2pdf from 'html2pdf.js';
+
 
 const licenses = {
   MIT: '[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)',
@@ -20,10 +25,77 @@ const licenses = {
   ISC: '[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)',
 };
 
+// Templates for pre-filling the editor.
+const TEMPLATES: { [key: string]: Partial<{
+  title: string;
+  description: string;
+  installation: string;
+  usage: string;
+  features: string[];
+  development: string;
+  contributing: string;
+  tests: string;
+}> } = {
+  Minimalist: {
+    title: "My Project",
+    description: "A short and sweet project description.",
+    installation: "npm install",
+    usage: "npm start",
+    features: ["Simple", "Easy to use"],
+    contributing: "Please fork and submit pull requests.",
+    tests: "npm test",
+  },
+  Detailed: {
+    title: "My Detailed Project",
+    description:
+      "This project is designed to solve problem X with a comprehensive set of features.",
+    installation: "git clone ...\nnpm install",
+    usage: "Detailed usage instructions go here.",
+    features: ["Feature A", "Feature B", "Feature C"],
+    development: "Run the development server with npm run dev.",
+    contributing: "Open issues, fork, and submit PRs.",
+    tests: "Run tests using npm test",
+  },
+  Technical: {
+    title: "Technical Project",
+    description:
+      "An advanced project that leverages cutting-edge technologies.",
+    installation: "Clone the repo, install dependencies with yarn.",
+    usage: "Refer to the technical documentation.",
+    features: ["High Performance", "Scalable", "Modular"],
+    development: "Use Docker and Kubernetes for local development.",
+    contributing: "Follow our coding guidelines.",
+    tests: "Automated tests are run via CI/CD pipeline.",
+  },
+};
+
+interface Deployment { provider: string; url: string; }
+
+interface HomeState {
+  title: string;
+  username: string;
+  repo: string;
+  description: string;
+  installation: string;
+  usage: string;
+  features: string[];
+  contributing: string;
+  tests: string;
+  license: string;
+  demoUrl: string;
+  coverImage: string;
+  badges: string[];
+  tocEnabled: boolean;
+  development: string;
+  gifUrl: string;
+  deployments: Deployment[];
+  badgeStyle: string;
+}
+
 export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
   
-  // State definitions
+  // Main editor states
   const [title, setTitle] = useState('');
   const [username, setUsername] = useState('');
   const [repo, setRepo] = useState('');
@@ -41,11 +113,38 @@ export default function Home() {
   const [development, setDevelopment] = useState('');
   const [readmeContent, setReadmeContent] = useState('');
   const [gifUrl, setGifUrl] = useState('');
-  interface Deployment { provider: string; url: string; }
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [badgeStyle, setBadgeStyle] = useState("flat");
-  const [exportOption, setExportOption] = useState("");
   
+  // New state for Template Selection
+  const [selectedTemplate, setSelectedTemplate] = useState("");
+
+  // Version History states
+  const initialVersion: HomeState = {
+    title: '',
+    username: '',
+    repo: '',
+    description: '',
+    installation: '',
+    usage: '',
+    features: [''],
+    contributing: '',
+    tests: '',
+    license: '',
+    demoUrl: '',
+    coverImage: '',
+    badges: [],
+    tocEnabled: true,
+    development: '',
+    gifUrl: '',
+    deployments: [],
+    badgeStyle: 'flat',
+  };
+  const [history, setHistory] = useState<HomeState[]>([initialVersion]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const [skipHistory, setSkipHistory] = useState(false);
+
+  // Section open states
   const [openSections, setOpenSections] = useState({
     project: true,
     badges: true,
@@ -53,7 +152,7 @@ export default function Home() {
     media: true,
   });
 
-  // 
+  // Load from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem('readmeGeneratorState');
     if (stored) {
@@ -79,6 +178,7 @@ export default function Home() {
     }
   }, []);
 
+  // Auto-save state to localStorage
   useEffect(() => {
     const state = {
       title,
@@ -103,6 +203,98 @@ export default function Home() {
     localStorage.setItem('readmeGeneratorState', JSON.stringify(state));
   }, [title, username, repo, description, installation, usage, features, contributing, tests, license, demoUrl, coverImage, badges, tocEnabled, development, gifUrl, deployments, badgeStyle]);
 
+  // Version History: Save new version whenever key fields change
+  useEffect(() => {
+    if (skipHistory) return;
+    const currentVersion: HomeState = {
+      title,
+      username,
+      repo,
+      description,
+      installation,
+      usage,
+      features,
+      contributing,
+      tests,
+      license,
+      demoUrl,
+      coverImage,
+      badges,
+      tocEnabled,
+      development,
+      gifUrl,
+      deployments,
+      badgeStyle,
+    };
+    // Only add if different from the last version
+    const lastVersion = history[historyIndex];
+    if (JSON.stringify(currentVersion) !== JSON.stringify(lastVersion)) {
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push(currentVersion);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+    }
+  }, [title, username, repo, description, installation, usage, features, contributing, tests, license, demoUrl, coverImage, badges, tocEnabled, development, gifUrl, deployments, badgeStyle]);
+
+  const applyVersion = (version: HomeState) => {
+    // Set all states from a version object.
+    setTitle(version.title);
+    setUsername(version.username);
+    setRepo(version.repo);
+    setDescription(version.description);
+    setInstallation(version.installation);
+    setUsage(version.usage);
+    setFeatures(version.features);
+    setContributing(version.contributing);
+    setTests(version.tests);
+    setLicense(version.license);
+    setDemoUrl(version.demoUrl);
+    setCoverImage(version.coverImage);
+    setBadges(version.badges);
+    setTocEnabled(version.tocEnabled);
+    setDevelopment(version.development);
+    setGifUrl(version.gifUrl);
+    setDeployments(version.deployments);
+    setBadgeStyle(version.badgeStyle);
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      setSkipHistory(true);
+      const newIndex = historyIndex - 1;
+      applyVersion(history[newIndex]);
+      setHistoryIndex(newIndex);
+      setSkipHistory(false);
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      setSkipHistory(true);
+      const newIndex = historyIndex + 1;
+      applyVersion(history[newIndex]);
+      setHistoryIndex(newIndex);
+      setSkipHistory(false);
+    }
+  };
+
+  // Template selection handler
+  const handleTemplateSelect = (template: string) => {
+    setSelectedTemplate(template);
+    const t = TEMPLATES[template];
+    if (t) {
+      // Update only fields provided by the template
+      if (t.title !== undefined) setTitle(t.title);
+      if (t.description !== undefined) setDescription(t.description);
+      if (t.installation !== undefined) setInstallation(t.installation);
+      if (t.usage !== undefined) setUsage(t.usage);
+      if (t.features !== undefined) setFeatures(t.features);
+      if (t.development !== undefined) setDevelopment(t.development);
+      if (t.contributing !== undefined) setContributing(t.contributing);
+      if (t.tests !== undefined) setTests(t.tests);
+    }
+  };
+
   const generateReadme = useCallback(() => {
     try {
       const sections = [];
@@ -112,8 +304,6 @@ export default function Home() {
       sections.push(`# ${title}\n${badges.join(' ')}\n${licenses[license as keyof typeof licenses] || ''}\n`);
       if (description) sections.push(`## Description\n${description}\n`);
       if (demoUrl) sections.push(`## Quick Start Demo\n${demoUrl.includes('http') ? `[Demo Preview](${demoUrl})` : demoUrl}\n`);
-      
-      // Demo GIF
       if (gifUrl) sections.push(`## Demo GIF\n![Demo GIF](${gifUrl})\n`);
 
       if (tocEnabled) {
@@ -194,6 +384,7 @@ export default function Home() {
     }
   };
 
+  // For PDF export using html2pdf.js
   const downloadPDF = () => {
     try {
       const element = document.createElement('div');
@@ -212,7 +403,7 @@ export default function Home() {
     }
   };
 
-  const handleExport = (option: string) => {
+  const handleExportSelect = (option: string) => {
     if (option === 'markdown') {
       downloadMarkdown();
     } else if (option === 'html') {
@@ -220,10 +411,8 @@ export default function Home() {
     } else if (option === 'pdf') {
       downloadPDF();
     }
-    setExportOption(""); // reset selection
   };
 
-  // Copy button
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(readmeContent);
@@ -237,7 +426,6 @@ export default function Home() {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
-  // Clear button handler
   const clearAll = () => {
     setTitle('');
     setUsername('');
@@ -298,6 +486,23 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* Template Selection Dropdown */}
+      <div className="mb-6">
+        <Label>Template</Label>
+        <select
+          value={selectedTemplate}
+          onChange={(e) => handleTemplateSelect(e.target.value)}
+          className="border p-2 rounded w-full"
+        >
+          <option value="">Select a Template</option>
+          {Object.keys(TEMPLATES).map((template) => (
+            <option key={template} value={template}>
+              {template}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="flex flex-col gap-6">
@@ -365,22 +570,25 @@ export default function Home() {
           />
 
           <div className="flex gap-3 border-t-subtle pt-4">
-            <Select
-              value={exportOption}
-              onValueChange={(value) => {
-                setExportOption(value);
-                handleExport(value);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Export" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="markdown">Export .md</SelectItem>
-                <SelectItem value="html">Export HTML</SelectItem>
-                <SelectItem value="pdf">Export PDF</SelectItem>
-              </SelectContent>
-            </Select>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="flex-1 gap-2">
+                  <Download size={16} />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onSelect={() => handleExportSelect('markdown')}>
+                  Export .md
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleExportSelect('html')}>
+                  Export HTML
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleExportSelect('pdf')}>
+                  Export PDF
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" onClick={copyToClipboard} className="flex-1 gap-2">
               <Copy size={16} />
               Copy
