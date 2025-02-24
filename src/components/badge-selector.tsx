@@ -127,14 +127,14 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
   };
 
   return (
-    <Card className="p-4 space-y-6">
+    <Card className="p-4 space-y-6 border-b-subtle">
       <div className="space-y-4">
         {/* Badge Selection Section */}
         <div>
           <Label className="mb-1 block">Badge Selection</Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full border-b-subtle">
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
@@ -150,7 +150,7 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
               onValueChange={setSelectedBadge}
               disabled={!selectedCategory}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full border-b-subtle">
                 <SelectValue placeholder="Select Badge" />
               </SelectTrigger>
               <SelectContent>
@@ -169,12 +169,12 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
         {/* Styling Section */}
         <div>
           <Label className="mb-1 block">Styling</Label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 border-b-subtle">
             <Select 
             value={selectedStyle} 
             onValueChange={setSelectedStyle}
             disabled={!selectedBadge}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full border-b-subtle">
                 <SelectValue placeholder="Select Style" />
               </SelectTrigger>
               <SelectContent>
@@ -186,7 +186,7 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
               </SelectContent>
             </Select>
             <Select value={selectedSize} onValueChange={(value)   => setSelectedSize(value as keyof typeof SIZE_CLASS_MAP) }>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full border-b-subtle">
                 <SelectValue placeholder="Select Size" />
               </SelectTrigger>
               <SelectContent>
@@ -212,8 +212,8 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
         {/* Preview Section */}
         {selectedBadge && (
           <div className="mt-4">
-            <Label className="mb-1 block">Preview:</Label>
-            <div className="p-2 border rounded inline-block">
+            <Label className="mb-1 block border-b-subtle">Preview:</Label>
+            <div className="p-2 inline-block border-b-subtle">
               <img 
                 alt="Preview Badge" 
                 src={previewBadgeUrl} 

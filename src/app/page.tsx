@@ -436,7 +436,7 @@ export default function Home() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="your-username"
-                className="border-subtle"
+                className="border-b-subtle border rounded"
               />
             </div>
             <div className="space-y-2">
@@ -445,7 +445,7 @@ export default function Home() {
                 value={repo}
                 onChange={(e) => setRepo(e.target.value)}
                 placeholder="your-repo"
-                className="border-subtle"
+                className="border-b-subtle border rounded"
               />
             </div>
           </div>
@@ -506,13 +506,13 @@ export default function Home() {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onSelect={() => handleExportSelect('markdown')}>
-                  Export .md
+                  Export .md <span className="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300">README.md</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleExportSelect('html')}>
-                  Export HTML
+                <DropdownMenuItem onSelect={() => handleExportSelect('html')} disabled>
+                  Export HTML <span className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">with v0.2</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleExportSelect('pdf')}>
-                  Export PDF
+                <DropdownMenuItem onSelect={() => handleExportSelect('pdf')} disabled>
+                  Export PDF <span className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">with v0.2</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

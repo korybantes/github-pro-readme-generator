@@ -82,7 +82,7 @@ interface EditorSectionProps {
     project: boolean;
     badges: boolean;
     documentation: boolean;
-    media: boolean; // new section for Media & Deployment
+    media: boolean; // media deployment
   };
   setOpenSections: React.Dispatch<
     React.SetStateAction<{
@@ -92,7 +92,7 @@ interface EditorSectionProps {
       media: boolean;
     }>
   >;
-  // New props for media and deployment sections:
+  //new props for media and deployment sections:
   gifUrl: string;
   setGifUrl: (url: string) => void;
   deployments: Deployment[];
@@ -138,9 +138,9 @@ export function EditorSection({ ...props }: EditorSectionProps) {
   return (
     <div className="space-y-6">
       {/* Project Metadata Section */}
-      <Card className="p-6">
+      <Card className="p-6 border-b-subtle">
         <div className="space-y-4">
-          {/* Header with switch always visible */}
+          {/* Header switch */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
@@ -166,7 +166,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                     value={props.title}
                     onChange={(e) => props.setTitle(e.target.value)}
                     placeholder="My Awesome Project"
-                    className="w-full display:inline-block"
+                    className="w-full display:inline-block border-b-subtle"
                     required
                   />
                 </div>
@@ -177,7 +177,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                     onChange={(e) => props.setCoverImage(e.target.value)}
                     placeholder="https://example.com/cover.jpg"
                     type="url"
-                    className="w-full"
+                    className="w-full border-b-subtle"
                   />
                 </div>
               </div>
@@ -188,10 +188,10 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                   value={props.description}
                   onChange={(e) => props.setDescription(e.target.value)}
                   placeholder="Project description..."
-                  className="min-h-[100px] w-full"
+                  className="min-h-[100px] w-full border-b-subtle"
                   maxLength={500}
                 />
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-muted-foreground border-b-subtle">
                   {props.description.length}/500 characters
                 </div>
               </div>
@@ -204,13 +204,13 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                     onChange={(e) => props.setDemoUrl(e.target.value)}
                     placeholder="https://example.com/demo"
                     type="url"
-                    className="w-full"
+                    className="w-full border-b-subtle"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>License</Label>
                   <Select value={props.license} onValueChange={props.setLicense}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full border-b-subtle">
                       <SelectValue placeholder="Select license" />
                     </SelectTrigger>
                     <SelectContent>
@@ -228,7 +228,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       </Card>
 
       {/* Badge Selector Section */}
-      <Card className="p-6">
+      <Card className="p-6 border-b-subtle">
         <div className="space-y-4">
           {/* Header with switch always visible */}
           <div className="flex items-center justify-between">
@@ -239,12 +239,13 @@ export function EditorSection({ ...props }: EditorSectionProps) {
             <Switch
               checked={props.openSections.badges}
               onCheckedChange={() => toggleSection("badges")}
+              className="border-b-subtle"
             />
           </div>
 
           {/* Content conditionally rendered */}
           {props.openSections.badges && (
-            <div className="pt-4">
+            <div className="pt-4 border-b-subtle">
               <BadgeSelector
                 badges={props.badges}
                 setBadges={props.setBadges}
@@ -257,7 +258,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       </Card>
 
       {/* Media & Deployment Section */}
-      <Card className="p-6">
+      <Card className="p-6 border-b-subtle">
         <div className="space-y-4">
           {/* Header with switch always visible */}
           <div className="flex items-center justify-between">
@@ -280,15 +281,17 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                   onChange={(e) => props.setGifUrl(e.target.value)}
                   placeholder="https://example.com/demo.gif"
                   type="url"
-                  className="w-full"
+                  className="w-full border-b-subtle"
                 />
               </div>
 
               {/* Deployment Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label className="text-lg font-medium">Deployments</Label>
-                  <Button variant="outline" onClick={addDeployment} className="gap-2">
+                  <Label className="text-lg font-medium">Deployments
+                  <span className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">with v0.2</span>
+                  </Label> 
+                  <Button variant="outline" onClick={addDeployment} className="gap-2 disabled border-b-subtle" disabled >
                     <Plus size={16} />
                     Add Deployment
                   </Button>
@@ -301,7 +304,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                         updateDeployment(index, { provider: value, url: deployment.url })
                       }
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full border-b-subtle">
                         <SelectValue placeholder="Select provider" />
                       </SelectTrigger>
                       <SelectContent>
@@ -319,7 +322,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                       }
                       placeholder="https://example.com"
                       type="url"
-                      className="w-full"
+                      className="w-full border-b-subtle"
                     />
                     <Button variant="ghost" size="sm" onClick={() => removeDeployment(index)}>
                       <Trash size={16} />
@@ -333,7 +336,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       </Card>
 
       {/* Documentation Sections */}
-      <Card className="p-6">
+      <Card className="p-6 border-b-subtle">
         <div className="space-y-4">
           {/* Header with switches always visible */}
           <div className="flex items-center justify-between">
@@ -355,27 +358,27 @@ export function EditorSection({ ...props }: EditorSectionProps) {
 
           {/* Content conditionally rendered */}
           {props.openSections.documentation && (
-            <div className="space-y-6 pt-4">
+            <div className="space-y-6 pt-4 border-b-subtle">
               <SectionBlock title="Installation" value={props.installation} setValue={props.setInstallation} />
               <SectionBlock title="Usage" value={props.usage} setValue={props.setUsage} />
 
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
+              <div className="space-y-4 border-b-subtle">
+                <div className="flex items-center justify-between border-b-subtle">
                   <Label className="text-lg font-medium">Features</Label>
-                  <Button variant="outline" onClick={addFeature} className="gap-2">
+                  <Button variant="outline" onClick={addFeature} className="gap-2 border-b-subtle">
                     <Plus size={16} />
                     Add Feature
                   </Button>
                 </div>
                 <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <div className="space-y-2">
+                  <div className="space-y-2 border-b-subtle">
                     {props.features.map((feature, index) => (
                       <SortableItem key={index} id={feature} onRemove={() => removeFeature(index)}>
                         <Input
                           value={feature}
                           onChange={(e) => props.updateFeature(index, e.target.value)}
                           placeholder={`Feature ${index + 1}`}
-                          className="w-full"
+                          className="w-full border-b-subtle"
                         />
                       </SortableItem>
                     ))}
@@ -409,7 +412,7 @@ const SectionBlock = ({
       value={value}
       onChange={(e) => setValue(e.target.value)}
       placeholder={`Enter ${title.toLowerCase()}...`}
-      className="min-h-[120px] w-full"
+      className="min-h-[120px] w-full border-b-subtle"
     />
   </div>
 );
