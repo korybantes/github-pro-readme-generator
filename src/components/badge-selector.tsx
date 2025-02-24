@@ -2,10 +2,17 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
+
+const STYLE_OPTIONS = ["flat", "flat-square", "plastic", "for-the-badge", "social"];
+const SIZE_OPTIONS = ["Small", "Medium", "Large"];
+const SIZE_CLASS_MAP: { [key in "Small" | "Medium" | "Large"]: string } = {
+  "Small": "w-16",
+  "Medium": "w-24",
+  "Large": "w-32"
+};
 
 const BADGE_TEMPLATES = {
   "GitHub Stats": {
@@ -86,18 +93,29 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
 }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBadge, setSelectedBadge] = useState("");
+  const [selectedStyle, setSelectedStyle] = useState("for-the-badge");
+  const [selectedSize, setSelectedSize] = useState<"Small" | "Medium" | "Large">("Small");
+
+  // Create a preview URL using the selected badge, style, and placeholders.
+  const previewBadgeUrl = selectedBadge 
+    ? selectedBadge
+        .replaceAll("{username}", username)
+        .replaceAll("{repo}", repo)
+        .replace(/(style=)[^&]+/, `$1${selectedStyle}`)
+    : "";
 
   const addBadge = () => {
     if (!selectedBadge) return;
     
-    const badgeUrl = selectedBadge
+    let badgeUrl = selectedBadge
       .replaceAll("{username}", username)
-      .replaceAll("{repo}", repo);
+      .replaceAll("{repo}", repo)
+      .replace(/(style=)[^&]+/, `$1${selectedStyle}`);
     
     const badgeName = Object.entries(BADGE_TEMPLATES[selectedCategory as keyof typeof BADGE_TEMPLATES])
       .find(([_, url]) => url === selectedBadge)?.[0] || "Badge";
 
-    const badgeHtml = `<img alt="${badgeName}" src="${badgeUrl}" />`;
+    const badgeHtml = `<img alt="${badgeName}" src="${badgeUrl}" class="${SIZE_CLASS_MAP[selectedSize]} h-auto inline-block" />`;
     
     setBadges([...badges, badgeHtml]);
     setSelectedCategory("");
@@ -113,65 +131,104 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
       <div className="space-y-2">
         <Label>Badge Manager</Label>
         
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Category"
-                           className="overflow-auto rounded border-subtle" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.keys(BADGE_TEMPLATES).map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select 
-            value={selectedBadge} 
-            onValueChange={setSelectedBadge}
-            disabled={!selectedCategory}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select Badge" />
-            </SelectTrigger>
-            <SelectContent>
-              {selectedCategory && Object.entries(
-                BADGE_TEMPLATES[selectedCategory as keyof typeof BADGE_TEMPLATES]
-              ).map(([name, url]) => (
-                <SelectItem key={name} value={url}>
-                  {name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Button onClick={addBadge} disabled={!selectedBadge}>
-            Add
-          </Button>
+        {/* Responsive grid for dropdowns and Add button */}
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+          <div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(BADGE_TEMPLATES).map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Select value={selectedBadge} onValueChange={setSelectedBadge} disabled={!selectedCategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Badge" />
+              </SelectTrigger>
+              <SelectContent>
+                {selectedCategory && Object.entries(
+                  BADGE_TEMPLATES[selectedCategory as keyof typeof BADGE_TEMPLATES]
+                ).map(([name, url]) => (
+                  <SelectItem key={name} value={url}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Select value={selectedStyle} onValueChange={setSelectedStyle}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Style" />
+              </SelectTrigger>
+              <SelectContent>
+                {STYLE_OPTIONS.map((style) => (
+                  <SelectItem key={style} value={style}>
+                    {style}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Select value={selectedSize} onValueChange={(value) => setSelectedSize(value as "Small" | "Medium" | "Large")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Size" />
+              </SelectTrigger>
+              <SelectContent>
+                {SIZE_OPTIONS.map((size) => (
+                  <SelectItem key={size} value={size}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Button onClick={addBadge} disabled={!selectedBadge} className="w-full">
+              Add
+            </Button>
+          </div>
         </div>
 
         {(selectedCategory === "GitHub Stats" && (!username || !repo)) && (
-          <p className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 flat dark:bg-red-900 dark:text-red-300">
+          <p className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
             GitHub badges require username and repository name
           </p>
+        )}
+
+        {/* Preview Section */}
+        {selectedBadge && (
+          <div className="mt-4">
+            <Label>Preview:</Label>
+            <div className="p-2 border rounded inline-block">
+              <img 
+                alt="Preview Badge" 
+                src={previewBadgeUrl} 
+                className={`${SIZE_CLASS_MAP[selectedSize]} h-auto inline-block`} 
+              />
+            </div>
+          </div>
         )}
       </div>
 
       {/* Badges Display */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-1">
         {badges.map((badge, index) => (
           <div key={index} className="relative group">
-            <div 
-              className="flex-shrink-0" 
-              dangerouslySetInnerHTML={{ __html: badge }} 
-            />
+            <div className="flex-shrink-0" dangerouslySetInnerHTML={{ __html: badge }} />
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={() => removeBadge(index)}
-              className="absolute -right-2 -top-2 h-3 w-3 square bg-destructive/50 hover:bg-destructive text-white p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute -right-2 -top-2 h-3 w-3 bg-destructive/50 hover:bg-destructive text-white p-1 opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <X className="h-4 w-4" />
             </Button>
