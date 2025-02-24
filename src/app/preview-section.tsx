@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import 'highlight.js/styles/github.css';
 import 'highlight.js/styles/atom-one-dark.css';
+import { Button } from '@/components/ui/button';
+import { Redo, Undo } from 'lucide-react';
 
 interface CustomMarkedOptions extends MarkedOptions {
   highlight?: (code: string, lang: string) => string;
@@ -69,6 +71,36 @@ export function PreviewSection({ content, licenses, badgeStyle, previewTheme }: 
     }
   }, [badgeStyle, htmlContent]);
 
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(0);
+
+  useEffect(() => {
+    setHistory([content]);
+    setHistoryIndex(0);
+  }, [content]);
+
+  function handleUndo(): void {
+    if (historyIndex > 0) {
+      setHistoryIndex(historyIndex - 1);
+      setHtmlContent(marked.parse(history[historyIndex - 1]) as string);
+    }
+  }
+
+  function handleRedo(): void {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(historyIndex + 1);
+      setHtmlContent(marked.parse(history[historyIndex + 1]) as string);
+    }
+  }
+
+  useEffect(() => {
+    if (history[historyIndex] !== content) {
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push(content);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+    }
+  }, [content]);
   return (
     <div className={`space-y-6 ${previewTheme === 'dark' ? 'dark' : ''}`}>
       <Card className="p-6">
@@ -77,6 +109,17 @@ export function PreviewSection({ content, licenses, badgeStyle, previewTheme }: 
             <h3 className="text-lg font-semibold">Rendered Preview</h3>
             <Badge variant="outline">v0.1</Badge>
           </div>
+            {/* Undo/Redo buttons */}
+            <div className="flex gap-2">
+            <Button onClick={() => handleUndo()} className="gap-1" disabled={historyIndex === 0} variant="secondary">
+              <Undo size={16} />
+              Undo
+            </Button>
+            <Button onClick={() => handleRedo()} className="gap-1" disabled={historyIndex === history.length - 1} variant="secondary">
+              <Redo size={16} />
+              Redo
+            </Button>
+            </div>
           <Badge variant="secondary">Live</Badge>
         </div>
         <div className="h-[70vh] overflow-auto rounded-md border-subtle p-4">

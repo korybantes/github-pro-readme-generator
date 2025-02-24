@@ -520,15 +520,6 @@ export default function Home() {
               <Trash size={16} />
               Clear All
             </Button>
-            {/* Undo/Redo buttons */}
-            <Button onClick={undo} className="flex-1 gap-2" disabled={historyIndex === 0}>
-              <Undo size={16} />
-              Undo
-            </Button>
-            <Button onClick={redo} className="flex-1 gap-2" disabled={historyIndex === history.length - 1}>
-              <Redo size={16} />
-              Redo
-            </Button>
           </div>
         </div>
 
