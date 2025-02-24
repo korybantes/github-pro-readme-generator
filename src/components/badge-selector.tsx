@@ -170,7 +170,10 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
         <div>
           <Label className="mb-1 block">Styling</Label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <Select value={selectedStyle} onValueChange={setSelectedStyle}>
+            <Select 
+            value={selectedStyle} 
+            onValueChange={setSelectedStyle}
+            disabled={!selectedBadge}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Style" />
               </SelectTrigger>
@@ -182,7 +185,7 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={selectedSize} onValueChange={(value) => setSelectedSize(value as keyof typeof SIZE_CLASS_MAP)}>
+            <Select value={selectedSize} onValueChange={(value)   => setSelectedSize(value as keyof typeof SIZE_CLASS_MAP) }>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Size" />
               </SelectTrigger>

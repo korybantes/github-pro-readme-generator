@@ -4,11 +4,12 @@ import { EditorSection } from './editor-section';
 import { PreviewSection } from './preview-section';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Copy, Download, Github, Moon, Sun, Star } from 'lucide-react'; // Import Star icon
+import { Copy, Download, Github, Moon, Sun, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Trash } from 'lucide-react';
 
 const licenses = {
   MIT: '[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)',
@@ -19,6 +20,8 @@ const licenses = {
 
 export default function Home() {
   const { resolvedTheme, setTheme } = useTheme();
+  
+  // State definitions
   const [title, setTitle] = useState('');
   const [username, setUsername] = useState('');
   const [repo, setRepo] = useState('');
@@ -35,6 +38,68 @@ export default function Home() {
   const [tocEnabled, setTocEnabled] = useState(true);
   const [development, setDevelopment] = useState('');
   const [readmeContent, setReadmeContent] = useState('');
+  const [gifUrl, setGifUrl] = useState('');
+  // For deployments, ensure you use the correct type
+  interface Deployment { provider: string; url: string; }
+  const [deployments, setDeployments] = useState<Deployment[]>([]);
+  const [badgeStyle, setBadgeStyle] = useState("flat");
+  
+  const [openSections, setOpenSections] = useState({
+    project: true,
+    badges: true,
+    documentation: true,
+    media: true,
+  });
+
+  // Persist state to localStorage on change and load on mount
+  useEffect(() => {
+    const stored = localStorage.getItem('readmeGeneratorState');
+    if (stored) {
+      const state = JSON.parse(stored);
+      setTitle(state.title || '');
+      setUsername(state.username || '');
+      setRepo(state.repo || '');
+      setDescription(state.description || '');
+      setInstallation(state.installation || '');
+      setUsage(state.usage || '');
+      setFeatures(state.features || ['']);
+      setContributing(state.contributing || '');
+      setTests(state.tests || '');
+      setLicense(state.license || '');
+      setDemoUrl(state.demoUrl || '');
+      setCoverImage(state.coverImage || '');
+      setBadges(state.badges || []);
+      setTocEnabled(state.tocEnabled ?? true);
+      setDevelopment(state.development || '');
+      setGifUrl(state.gifUrl || '');
+      setDeployments(state.deployments || []);
+      setBadgeStyle(state.badgeStyle || "flat");
+    }
+  }, []);
+
+  useEffect(() => {
+    const state = {
+      title,
+      username,
+      repo,
+      description,
+      installation,
+      usage,
+      features,
+      contributing,
+      tests,
+      license,
+      demoUrl,
+      coverImage,
+      badges,
+      tocEnabled,
+      development,
+      gifUrl,
+      deployments,
+      badgeStyle,
+    };
+    localStorage.setItem('readmeGeneratorState', JSON.stringify(state));
+  }, [title, username, repo, description, installation, usage, features, contributing, tests, license, demoUrl, coverImage, badges, tocEnabled, development, gifUrl, deployments, badgeStyle]);
 
   const generateReadme = useCallback(() => {
     try {
@@ -45,12 +110,16 @@ export default function Home() {
       sections.push(`# ${title}\n${badges.join(' ')}\n${licenses[license as keyof typeof licenses] || ''}\n`);
       if (description) sections.push(`## Description\n${description}\n`);
       if (demoUrl) sections.push(`## Quick Start Demo\n${demoUrl.includes('http') ? `[Demo Preview](${demoUrl})` : demoUrl}\n`);
+      
+      // NEW: Include the Demo GIF if provided.
+      if (gifUrl) sections.push(`## Demo GIF\n![Demo GIF](${gifUrl})\n`);
 
       if (tocEnabled) {
         tocItems.push(
           '- [Project Title](#project-title)',
           description && '- [Description](#description)',
           demoUrl && '- [Quick Start Demo](#quick-start-demo)',
+          gifUrl && '- [Demo GIF](#demo-gif)',
           '- [Table of Contents](#table-of-contents)',
           installation && '- [Installation](#installation)',
           usage && '- [Usage](#usage)',
@@ -74,7 +143,7 @@ export default function Home() {
     } catch {
       toast.error('Error generating README content');
     }
-  }, [title, badges, license, description, demoUrl, tocEnabled, installation, usage, features, development, contributing, tests, coverImage]);
+  }, [title, badges, license, description, demoUrl, gifUrl, tocEnabled, installation, usage, features, development, contributing, tests, coverImage]);
 
   useEffect(() => {
     generateReadme();
@@ -96,6 +165,7 @@ export default function Home() {
     }
   };
 
+  //copy button
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(readmeContent);
@@ -109,13 +179,28 @@ export default function Home() {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
-  const [openSections, setOpenSections] = useState({
-    project: true,
-    badges: true,
-    documentation: true
-  });
-
-  const [badgeStyle, setBadgeStyle] = useState("flat");
+  // Clear button handler
+  const clearAll = () => {
+    setTitle('');
+    setUsername('');
+    setRepo('');
+    setDescription('');
+    setInstallation('');
+    setUsage('');
+    setFeatures(['']);
+    setContributing('');
+    setTests('');
+    setLicense('');
+    setDemoUrl('');
+    setCoverImage('');
+    setBadges([]);
+    setTocEnabled(true);
+    setDevelopment('');
+    setGifUrl('');
+    setDeployments([]);
+    setBadgeStyle("flat");
+    toast.success("All fields cleared!");
+  };
 
   return (
     <main className="container mx-auto p-4 max-w-7xl">
@@ -131,8 +216,6 @@ export default function Home() {
           <Button variant="ghost" size="icon" onClick={toggleTheme}>
             {resolvedTheme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
           </Button>
-
-          {/* Star on GitHub Button */}
           <Button variant="outline" asChild>
             <a
               href={`https://github.com/korybantes/github-pro-readme-generator`}
@@ -143,8 +226,6 @@ export default function Home() {
               <span>Star on GitHub</span>
             </a>
           </Button>
-
-          {/* korybantes Button with Custom Tooltip */}
           <div className="tooltip">
             <Button variant="outline" asChild>
               <a
@@ -220,6 +301,10 @@ export default function Home() {
             openSections={openSections}
             setOpenSections={setOpenSections}
             setTocEnabled={setTocEnabled}
+            gifUrl={gifUrl}
+            setGifUrl={setGifUrl}
+            deployments={deployments}
+            setDeployments={setDeployments}
           />
 
           <div className="flex gap-3 border-t-subtle pt-4">
@@ -227,15 +312,18 @@ export default function Home() {
               <Download size={16} />
               Export .md
             </Button>
-            <Button variant="outline" onClick={copyToClipboard} className="flex-1 gap-2 border-subtle">
+            <Button variant="outline" onClick={copyToClipboard} className="flex-1 gap-2">
               <Copy size={16} />
               Copy
+            </Button>
+            <Button variant="outline" onClick={clearAll} className="flex-1 gap-2">
+              <Trash size={16} />
+              Clear All
             </Button>
           </div>
         </div>
 
         <PreviewSection content={readmeContent} licenses={Object.values(licenses)} badgeStyle={badgeStyle} />
-
       </div>
     </main>
   );

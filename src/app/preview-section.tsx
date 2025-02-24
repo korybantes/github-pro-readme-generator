@@ -29,7 +29,7 @@ marked.setOptions({
 interface PreviewSectionProps {
   content: string;
   licenses: string[];
-  badgeStyle: string; // new prop that holds the current badge style (e.g. "flat", "for-the-badge", etc.)
+  badgeStyle: string; // new prop that holds the current badge style 
 }
 
 export function PreviewSection({ content, licenses, badgeStyle }: PreviewSectionProps) {
@@ -56,7 +56,7 @@ export function PreviewSection({ content, licenses, badgeStyle }: PreviewSection
     }
   }, [content]);
 
-  // When badgeStyle changes (or when content updates), update badge image URLs inside the rendered preview.
+  // When badgeStyle changes, update badge image URLs inside the rendered preview.
   useEffect(() => {
     if (badgeStyle) {
       const container = document.querySelector('.prose');

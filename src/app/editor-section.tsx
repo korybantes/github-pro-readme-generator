@@ -13,6 +13,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { useState } from "react";
 
+// New constant for deployment provider options
+const DEPLOYMENT_PROVIDERS = ["Vercel", "Netlify", "GitHub Pages", "Heroku", "Firebase"];
+
 const SortableItem = ({
   id,
   children,
@@ -37,6 +40,11 @@ const SortableItem = ({
     </div>
   );
 };
+
+interface Deployment {
+  provider: string;
+  url: string;
+}
 
 interface EditorSectionProps {
   title: string;
@@ -72,14 +80,21 @@ interface EditorSectionProps {
     project: boolean;
     badges: boolean;
     documentation: boolean;
+    media: boolean; // new section for Media & Deployment
   };
   setOpenSections: React.Dispatch<
     React.SetStateAction<{
       project: boolean;
       badges: boolean;
       documentation: boolean;
+      media: boolean;
     }>
   >;
+  // New props for media and deployment sections:
+  gifUrl: string;
+  setGifUrl: (url: string) => void;
+  deployments: Deployment[];
+  setDeployments: (deployments: Deployment[]) => void;
 }
 
 export function EditorSection({ ...props }: EditorSectionProps) {
@@ -99,6 +114,21 @@ export function EditorSection({ ...props }: EditorSectionProps) {
 
   const toggleSection = (section: keyof typeof props.openSections) => {
     props.setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  // New functions for deployment management
+  const addDeployment = () => {
+    props.setDeployments([...props.deployments, { provider: "", url: "" }]);
+  };
+
+  const removeDeployment = (index: number) => {
+    props.setDeployments(props.deployments.filter((_, i) => i !== index));
+  };
+
+  const updateDeployment = (index: number, deployment: Deployment) => {
+    const newDeployments = [...props.deployments];
+    newDeployments[index] = deployment;
+    props.setDeployments(newDeployments);
   };
 
   return (
@@ -221,6 +251,82 @@ export function EditorSection({ ...props }: EditorSectionProps) {
         </div>
       </Card>
 
+      {/* Media & Deployment Section */}
+      <Card className="p-6">
+        <div className="space-y-4">
+          {/* Header with switch always visible */}
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <span className="bg-primary w-2 h-2 rounded-full" />
+              Media & Deployment
+            </h3>
+            <Switch
+              checked={props.openSections.media}
+              onCheckedChange={() => toggleSection("media")}
+            />
+          </div>
+          {props.openSections.media && (
+            <div className="space-y-6 pt-4">
+              {/* Demo GIF Section */}
+              <div className="space-y-2">
+                <Label>Demo GIF URL</Label>
+                <Input
+                  value={props.gifUrl}
+                  onChange={(e) => props.setGifUrl(e.target.value)}
+                  placeholder="https://example.com/demo.gif"
+                  type="url"
+                  className="w-full"
+                />
+              </div>
+
+              {/* Deployment Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-lg font-medium">Deployments</Label>
+                  <Button variant="outline" onClick={addDeployment} className="gap-2">
+                    <Plus size={16} />
+                    Add Deployment
+                  </Button>
+                </div>
+                {props.deployments.map((deployment, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Select
+                      value={deployment.provider}
+                      onValueChange={(value) =>
+                        updateDeployment(index, { provider: value, url: deployment.url })
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select provider" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DEPLOYMENT_PROVIDERS.map((provider) => (
+                          <SelectItem key={provider} value={provider}>
+                            {provider}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      value={deployment.url}
+                      onChange={(e) =>
+                        updateDeployment(index, { provider: deployment.provider, url: e.target.value })
+                      }
+                      placeholder="https://example.com"
+                      type="url"
+                      className="w-full"
+                    />
+                    <Button variant="ghost" size="sm" onClick={() => removeDeployment(index)}>
+                      <Trash size={16} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+
       {/* Documentation Sections */}
       <Card className="p-6">
         <div className="space-y-4">
@@ -233,10 +339,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <Label>Table of Contents</Label>
-                <Switch
-                  checked={props.tocEnabled}
-                  onCheckedChange={props.setTocEnabled}
-                />
+                <Switch checked={props.tocEnabled} onCheckedChange={props.setTocEnabled} />
               </div>
               <Switch
                 checked={props.openSections.documentation}
@@ -250,7 +353,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
             <div className="space-y-6 pt-4">
               <SectionBlock title="Installation" value={props.installation} setValue={props.setInstallation} />
               <SectionBlock title="Usage" value={props.usage} setValue={props.setUsage} />
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Label className="text-lg font-medium">Features</Label>
