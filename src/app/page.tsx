@@ -23,7 +23,10 @@ const licenses = {
   ISC: '[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)',
 };
 
-interface Deployment { provider: string; url: string; }
+interface Deployment { 
+  provider: string; 
+  url: string; 
+}
 
 interface HomeState {
   title: string;
@@ -72,7 +75,7 @@ export default function Home() {
   
   // New state for Template Selection
   const [selectedTemplate, setSelectedTemplate] = useState("");
-
+  
   // Version History states
   const initialVersion: HomeState = {
     title: '',
@@ -97,7 +100,7 @@ export default function Home() {
   const [history, setHistory] = useState<HomeState[]>([initialVersion]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [skipHistory, setSkipHistory] = useState(false);
-
+  
   // Section open states
   const [openSections, setOpenSections] = useState({
     project: true,
@@ -105,7 +108,7 @@ export default function Home() {
     documentation: true,
     media: true,
   });
-
+  
   // Load from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem('readmeGeneratorState');
@@ -131,7 +134,7 @@ export default function Home() {
       setBadgeStyle(state.badgeStyle || "flat");
     }
   }, []);
-
+  
   // Auto-save state to localStorage
   useEffect(() => {
     const state = {
@@ -156,7 +159,7 @@ export default function Home() {
     };
     localStorage.setItem('readmeGeneratorState', JSON.stringify(state));
   }, [title, username, repo, description, installation, usage, features, contributing, tests, license, demoUrl, coverImage, badges, tocEnabled, development, gifUrl, deployments, badgeStyle]);
-
+  
   // Version History: Save new version whenever key fields change
   useEffect(() => {
     if (skipHistory) return;
@@ -189,7 +192,7 @@ export default function Home() {
       setHistoryIndex(newHistory.length - 1);
     }
   }, [title, username, repo, description, installation, usage, features, contributing, tests, license, demoUrl, coverImage, badges, tocEnabled, development, gifUrl, deployments, badgeStyle]);
-
+  
   const applyVersion = (version: HomeState) => {
     // Set all states from a version object.
     setTitle(version.title);
@@ -211,7 +214,7 @@ export default function Home() {
     setDeployments(version.deployments);
     setBadgeStyle(version.badgeStyle);
   };
-
+  
   const undo = () => {
     if (historyIndex > 0) {
       setSkipHistory(true);
@@ -221,7 +224,7 @@ export default function Home() {
       setSkipHistory(false);
     }
   };
-
+  
   const redo = () => {
     if (historyIndex < history.length - 1) {
       setSkipHistory(true);
@@ -231,18 +234,18 @@ export default function Home() {
       setSkipHistory(false);
     }
   };
-
+  
   const generateReadme = useCallback(() => {
     try {
       const sections = [];
       const tocItems = [];
-
+  
       if (coverImage) sections.push(`![Cover](${coverImage})`);
       sections.push(`# ${title}\n${badges.join(' ')}\n${licenses[license as keyof typeof licenses] || ''}\n`);
       if (description) sections.push(`## Description\n${description}\n`);
       if (demoUrl) sections.push(`## Quick Start Demo\n${demoUrl.includes('http') ? `[Demo Preview](${demoUrl})` : demoUrl}\n`);
       if (gifUrl) sections.push(`## Demo GIF\n![Demo GIF](${gifUrl})\n`);
-
+  
       if (tocEnabled) {
         tocItems.push(
           '- [Project Title](#project-title)',
@@ -259,7 +262,7 @@ export default function Home() {
         );
         sections.push(`## Table of Contents\n${tocItems.filter(Boolean).join('\n')}\n`);
       }
-
+  
       if (installation) sections.push(`## Installation\n\`\`\`bash\n${installation}\n\`\`\`\n`);
       if (usage) sections.push(`## Usage\n${usage}\n`);
       if (features.some(f => f)) sections.push(`## Features\n${features.filter(f => f).map(f => `- ${f}`).join('\n')}\n`);
@@ -267,17 +270,17 @@ export default function Home() {
       if (contributing) sections.push(`## Contribute\n${contributing}\n`);
       if (tests) sections.push(`## Tests\n\`\`\`bash\n${tests}\n\`\`\`\n`);
       if (license) sections.push(`## License\nThis project is licensed under the ${license} License.\n`);
-
+  
       setReadmeContent(sections.filter(Boolean).join('\n'));
     } catch {
       toast.error('Error generating README content');
     }
   }, [title, badges, license, description, demoUrl, gifUrl, tocEnabled, installation, usage, features, development, contributing, tests, coverImage]);
-
+  
   useEffect(() => {
     generateReadme();
   }, [generateReadme]);
-
+  
   const downloadMarkdown = () => {
     try {
       const blob = new Blob([readmeContent], { type: 'text/markdown' });
@@ -293,7 +296,7 @@ export default function Home() {
       toast.error('Failed to download file');
     }
   };
-
+  
   const downloadHTML = () => {
     try {
       const html = `
@@ -320,10 +323,11 @@ export default function Home() {
       toast.error('Failed to download HTML');
     }
   };
-
-  // For PDF export using html2pdf.js
-  const downloadPDF = () => {
+  
+  // For PDF export using html2pdf.js with dynamic import
+  const downloadPDF = async () => {
     try {
+      const { default: html2pdf } = await import('html2pdf.js');
       const element = document.createElement('div');
       element.innerHTML = readmeContent;
       html2pdf()
@@ -339,7 +343,7 @@ export default function Home() {
       toast.error('Failed to export PDF');
     }
   };
-
+  
   const handleExportSelect = (option: string) => {
     if (option === 'markdown') {
       downloadMarkdown();
@@ -349,7 +353,7 @@ export default function Home() {
       downloadPDF();
     }
   };
-
+  
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(readmeContent);
@@ -358,11 +362,11 @@ export default function Home() {
       toast.error('Failed to copy!');
     }
   };
-
+  
   const toggleTheme = () => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
-
+  
   const clearAll = () => {
     setTitle('');
     setUsername('');
@@ -384,7 +388,7 @@ export default function Home() {
     setBadgeStyle("flat");
     toast.success("All fields cleared!");
   };
-
+  
   return (
     <main className="container mx-auto p-4 max-w-7xl">
       <header className="flex items-center justify-between mb-8 pb-4 border-b-subtle">
@@ -445,7 +449,7 @@ export default function Home() {
               />
             </div>
           </div>
-
+  
           <EditorSection
             title={title}
             setTitle={setTitle}
@@ -491,7 +495,7 @@ export default function Home() {
             badgeStyle={badgeStyle}
             setBadgeStyle={setBadgeStyle}
           />
-
+  
           <div className="flex gap-3 border-t-subtle pt-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -522,7 +526,7 @@ export default function Home() {
             </Button>
           </div>
         </div>
-
+  
         <PreviewSection
           content={readmeContent}
           licenses={Object.values(licenses)}
@@ -533,5 +537,3 @@ export default function Home() {
     </main>
   );
 }
-import html2pdf from 'html2pdf.js';
-
