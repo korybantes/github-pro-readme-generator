@@ -8,7 +8,7 @@ import { X } from "lucide-react";
 
 const STYLE_OPTIONS = ["flat", "flat-square", "plastic", "for-the-badge", "social"];
 const SIZE_OPTIONS = ["Small", "Medium", "Large"];
-const SIZE_CLASS_MAP: { [key in "Small" | "Medium" | "Large"]: string } = {
+const SIZE_CLASS_MAP = {
   "Small": "w-16",
   "Medium": "w-24",
   "Large": "w-32"
@@ -94,9 +94,9 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBadge, setSelectedBadge] = useState("");
   const [selectedStyle, setSelectedStyle] = useState("for-the-badge");
-  const [selectedSize, setSelectedSize] = useState<"Small" | "Medium" | "Large">("Small");
+  const [selectedSize, setSelectedSize] = useState<keyof typeof SIZE_CLASS_MAP>("Small");
 
-  // Create a preview URL using the selected badge, style, and placeholders.
+  // Preview + URL
   const previewBadgeUrl = selectedBadge 
     ? selectedBadge
         .replaceAll("{username}", username)
@@ -127,13 +127,12 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
   };
 
   return (
-    <Card className="p-4 space-y-4">
-      <div className="space-y-2">
-        <Label>Badge Manager</Label>
-        
-        {/* Responsive grid for dropdowns and Add button */}
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
-          <div>
+    <Card className="p-4 space-y-6">
+      <div className="space-y-4">
+        {/* Badge Selection Section */}
+        <div>
+          <Label className="mb-1 block">Badge Selection</Label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Category" />
@@ -146,9 +145,11 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div>
-            <Select value={selectedBadge} onValueChange={setSelectedBadge} disabled={!selectedCategory}>
+            <Select 
+              value={selectedBadge} 
+              onValueChange={setSelectedBadge}
+              disabled={!selectedCategory}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Badge" />
               </SelectTrigger>
@@ -163,7 +164,12 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
               </SelectContent>
             </Select>
           </div>
-          <div>
+        </div>
+
+        {/* Styling Section */}
+        <div>
+          <Label className="mb-1 block">Styling</Label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <Select value={selectedStyle} onValueChange={setSelectedStyle}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Style" />
@@ -176,9 +182,7 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div>
-            <Select value={selectedSize} onValueChange={(value) => setSelectedSize(value as "Small" | "Medium" | "Large")}>
+            <Select value={selectedSize} onValueChange={(value) => setSelectedSize(value as keyof typeof SIZE_CLASS_MAP)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Size" />
               </SelectTrigger>
@@ -190,8 +194,6 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div>
             <Button onClick={addBadge} disabled={!selectedBadge} className="w-full">
               Add
             </Button>
@@ -207,7 +209,7 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
         {/* Preview Section */}
         {selectedBadge && (
           <div className="mt-4">
-            <Label>Preview:</Label>
+            <Label className="mb-1 block">Preview:</Label>
             <div className="p-2 border rounded inline-block">
               <img 
                 alt="Preview Badge" 

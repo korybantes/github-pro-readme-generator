@@ -26,7 +26,13 @@ marked.setOptions({
   },
 } as CustomMarkedOptions);
 
-export function PreviewSection({ content, licenses }: { content: string, licenses: string[] }) {
+interface PreviewSectionProps {
+  content: string;
+  licenses: string[];
+  badgeStyle: string; // new prop that holds the current badge style (e.g. "flat", "for-the-badge", etc.)
+}
+
+export function PreviewSection({ content, licenses, badgeStyle }: PreviewSectionProps) {
   const [htmlContent, setHtmlContent] = useState('');
 
   useEffect(() => {
@@ -34,11 +40,11 @@ export function PreviewSection({ content, licenses }: { content: string, license
       const parsed = marked.parse(content) as string;
       setHtmlContent(parsed);
       
-      // Highlight both sections
+      // Highlight code blocks using highlight.js
       const hljs = require('highlight.js');
       hljs.highlightAll();
       
-      // Manually highlight raw markdown
+      // Manually highlight raw markdown blocks if needed
       const markdownBlocks = document.querySelectorAll('code.language-markdown');
       markdownBlocks.forEach((block) => {
         if (!block.innerHTML) {
@@ -49,6 +55,23 @@ export function PreviewSection({ content, licenses }: { content: string, license
       setHtmlContent('<p>Error rendering preview</p>');
     }
   }, [content]);
+
+  // When badgeStyle changes (or when content updates), update badge image URLs inside the rendered preview.
+  useEffect(() => {
+    if (badgeStyle) {
+      const container = document.querySelector('.prose');
+      if (container) {
+        const images = container.querySelectorAll('img');
+        images.forEach((img) => {
+          const src = img.getAttribute('src');
+          if (src && src.includes('?style=')) {
+            const newSrc = src.replace(/(style=)[^&]+/, `$1${badgeStyle}`);
+            img.setAttribute('src', newSrc);
+          }
+        });
+      }
+    }
+  }, [badgeStyle, htmlContent]);
 
   return (
     <div className="space-y-6">
@@ -68,10 +91,8 @@ export function PreviewSection({ content, licenses }: { content: string, license
             }}
             ref={(node) => {
               if (node) {
-                // Highlight codes
                 const hljs = require('highlight.js');
                 node.querySelectorAll('pre code').forEach((block) => {
-                  // Only highlight if not already processed
                   if (!block.classList.contains('hljs')) {
                     hljs.highlightElement(block);
                   }
@@ -95,9 +116,7 @@ export function PreviewSection({ content, licenses }: { content: string, license
             <code 
               className="language-xl block whitespace-pre-wrap"
               dangerouslySetInnerHTML={{
-                __html: require('highlight.js').highlight(content, { 
-                  language: 'xl' 
-                }).value
+                __html: require('highlight.js').highlight(content, { language: 'xl' }).value
               }}
             />
           </pre>

@@ -115,6 +115,8 @@ export default function Home() {
     documentation: true
   });
 
+  const [badgeStyle, setBadgeStyle] = useState("flat");
+
   return (
     <main className="container mx-auto p-4 max-w-7xl">
       <header className="flex items-center justify-between mb-8 pb-4 border-b-subtle">
@@ -232,7 +234,8 @@ export default function Home() {
           </div>
         </div>
 
-        <PreviewSection content={readmeContent} licenses={Object.values(licenses)} />
+        <PreviewSection content={readmeContent} licenses={Object.values(licenses)} badgeStyle={badgeStyle} />
+
       </div>
     </main>
   );
