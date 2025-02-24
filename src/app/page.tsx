@@ -325,7 +325,7 @@ export default function Home() {
 
   // Define the signature to be appended to every exported file.
   const signatureMarkdown =
-    "\n\n[Made by Github Pro Readme Generator 🚀](https://github-pro-readme-generator.vercel.app)";
+    "\n\n[Made by Github Pro Readme Generator 🚀](https://read-me.pro)";
 
   const downloadMarkdown = () => {
     try {
@@ -346,7 +346,7 @@ export default function Home() {
   const downloadHTML = () => {
     try {
       // Convert markdown signature to an HTML anchor tag
-      const signatureHTML = `<br><br><a href="https://github-pro-readme-generator.vercel.app">Made by Github Pro Readme Generator 🚀</a>`;
+      const signatureHTML = `<br><br><a href="https://read-me.pro">Made by Github Pro Readme Generator 🚀</a>`;
       const html = `
         <html>
           <head>
@@ -378,7 +378,7 @@ export default function Home() {
     try {
       const { default: html2pdf } = await import('html2pdf.js');
       // Convert markdown to HTML for PDF export using marked.
-      const signatureHTML = `<br><br><a href="https://github-pro-readme-generator.vercel.app">Made by Github Pro Readme Generator 🚀</a>`;
+      const signatureHTML = `<br><br><a href="https://read-me.pro">Made by Github Pro Readme Generator 🚀</a>`;
       const htmlContent = marked.parse(readmeContent) + signatureHTML;
       const element = document.createElement('div');
       element.innerHTML = htmlContent;

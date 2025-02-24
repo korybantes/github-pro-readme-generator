@@ -7,7 +7,7 @@
 **GitHub PRO README Generator** is an intuitive and feature-rich tool that helps developers effortlessly create high-quality, professional README files for their projects. Whether you're building an open-source library, a personal project, or a commercial application, this tool streamlines the process of structuring and formatting your README with essential sections like installation, usage, features, contributions, and more.
 
 ## Quick Start Demo
-[Demo Preview](https://github-pro-readme-generator.vercel.app)
+[Demo Preview](https://read-me.pro)
 
 ## Demo GIF
 ![Demo GIF](https://c.tenor.com/BqarU4wcl1cAAAAC/tenor.gif)
@@ -27,7 +27,7 @@
 Using GitHub PRO README Generator is simple and efficient. Follow these steps to create a professional README file for your project:
 
 1. Start a New README
-Open the app in https://github-pro-readme-generator.vercel.app
+Open the app in https://read-me.pro
 2. Enter Project Details
 Fill in essential sections like:
 Project Name & Description
