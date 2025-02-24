@@ -15,8 +15,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import * as html2pdf from 'html2pdf.js';
-
 
 const licenses = {
   MIT: '[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)',
@@ -425,8 +423,6 @@ export default function Home() {
           </div>
         </div>
       </header>
-
-
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="flex flex-col gap-6">
           <div className="grid grid-cols-2 gap-4">
@@ -481,7 +477,9 @@ export default function Home() {
             badges={badges}
             setBadges={setBadges}
             username={username}
+            setUsername={setUsername}
             repo={repo}
+            setRepo={setRepo}
             tocEnabled={tocEnabled}
             openSections={openSections}
             setOpenSections={setOpenSections}
@@ -490,6 +488,8 @@ export default function Home() {
             setGifUrl={setGifUrl}
             deployments={deployments}
             setDeployments={setDeployments}
+            badgeStyle={badgeStyle}
+            setBadgeStyle={setBadgeStyle}
           />
 
           <div className="flex gap-3 border-t-subtle pt-4">
@@ -520,6 +520,15 @@ export default function Home() {
               <Trash size={16} />
               Clear All
             </Button>
+            {/* Undo/Redo buttons */}
+            <Button onClick={undo} className="flex-1 gap-2" disabled={historyIndex === 0}>
+              <Undo size={16} />
+              Undo
+            </Button>
+            <Button onClick={redo} className="flex-1 gap-2" disabled={historyIndex === history.length - 1}>
+              <Redo size={16} />
+              Redo
+            </Button>
           </div>
         </div>
 
@@ -533,3 +542,5 @@ export default function Home() {
     </main>
   );
 }
+import html2pdf from 'html2pdf.js';
+

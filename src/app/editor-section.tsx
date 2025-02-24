@@ -11,7 +11,7 @@ import { Plus, Trash, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DndContext, closestCenter } from "@dnd-kit/core";
-import { useState } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 
 // New constant for deployment provider options
 const DEPLOYMENT_PROVIDERS = ["Vercel", "Netlify", "GitHub Pages", "Heroku", "Firebase"];
@@ -50,6 +50,8 @@ interface EditorSectionProps {
   title: string;
   setTitle: (title: string) => void;
   coverImage: string;
+  setUsername: Dispatch<SetStateAction<string>>;
+  setRepo: React.Dispatch<React.SetStateAction<string>>;
   setCoverImage: (url: string) => void;
   description: string;
   setDescription: (description: string) => void;
@@ -95,6 +97,8 @@ interface EditorSectionProps {
   setGifUrl: (url: string) => void;
   deployments: Deployment[];
   setDeployments: (deployments: Deployment[]) => void;
+  badgeStyle: string;
+  setBadgeStyle: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function EditorSection({ ...props }: EditorSectionProps) {
