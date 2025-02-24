@@ -29,22 +29,19 @@ marked.setOptions({
 interface PreviewSectionProps {
   content: string;
   licenses: string[];
-  badgeStyle: string; // new prop that holds the current badge style 
+  badgeStyle: string;
+  previewTheme: string; // new prop
 }
 
-export function PreviewSection({ content, licenses, badgeStyle }: PreviewSectionProps) {
+export function PreviewSection({ content, licenses, badgeStyle, previewTheme }: PreviewSectionProps) {
   const [htmlContent, setHtmlContent] = useState('');
 
   useEffect(() => {
     try {
       const parsed = marked.parse(content) as string;
       setHtmlContent(parsed);
-      
-      // Highlight code blocks using highlight.js
       const hljs = require('highlight.js');
       hljs.highlightAll();
-      
-      // Manually highlight raw markdown blocks if needed
       const markdownBlocks = document.querySelectorAll('code.language-markdown');
       markdownBlocks.forEach((block) => {
         if (!block.innerHTML) {
@@ -56,7 +53,6 @@ export function PreviewSection({ content, licenses, badgeStyle }: PreviewSection
     }
   }, [content]);
 
-  // When badgeStyle changes, update badge image URLs inside the rendered preview.
   useEffect(() => {
     if (badgeStyle) {
       const container = document.querySelector('.prose');
@@ -74,7 +70,7 @@ export function PreviewSection({ content, licenses, badgeStyle }: PreviewSection
   }, [badgeStyle, htmlContent]);
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${previewTheme === 'dark' ? 'dark' : ''}`}>
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -86,9 +82,7 @@ export function PreviewSection({ content, licenses, badgeStyle }: PreviewSection
         <div className="h-[70vh] overflow-auto rounded-md border-subtle p-4">
           <div
             className="prose dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ 
-              __html: htmlContent,
-            }}
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
             ref={(node) => {
               if (node) {
                 const hljs = require('highlight.js');

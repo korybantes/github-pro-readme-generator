@@ -4,12 +4,14 @@ import { EditorSection } from './editor-section';
 import { PreviewSection } from './preview-section';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Copy, Download, Github, Moon, Sun, Star } from 'lucide-react';
+import { Copy, Download, Github, Moon, Sun, Star, Trash } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Trash } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// For PDF export, ensure you install html2pdf.js: npm install html2pdf.js
+import html2pdf from 'html2pdf.js';
 
 const licenses = {
   MIT: '[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)',
@@ -39,10 +41,10 @@ export default function Home() {
   const [development, setDevelopment] = useState('');
   const [readmeContent, setReadmeContent] = useState('');
   const [gifUrl, setGifUrl] = useState('');
-  // For deployments, ensure you use the correct type
   interface Deployment { provider: string; url: string; }
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [badgeStyle, setBadgeStyle] = useState("flat");
+  const [exportOption, setExportOption] = useState("");
   
   const [openSections, setOpenSections] = useState({
     project: true,
@@ -51,7 +53,7 @@ export default function Home() {
     media: true,
   });
 
-  // Persist state to localStorage on change and load on mount
+  // 
   useEffect(() => {
     const stored = localStorage.getItem('readmeGeneratorState');
     if (stored) {
@@ -111,7 +113,7 @@ export default function Home() {
       if (description) sections.push(`## Description\n${description}\n`);
       if (demoUrl) sections.push(`## Quick Start Demo\n${demoUrl.includes('http') ? `[Demo Preview](${demoUrl})` : demoUrl}\n`);
       
-      // NEW: Include the Demo GIF if provided.
+      // Demo GIF
       if (gifUrl) sections.push(`## Demo GIF\n![Demo GIF](${gifUrl})\n`);
 
       if (tocEnabled) {
@@ -165,7 +167,63 @@ export default function Home() {
     }
   };
 
-  //copy button
+  const downloadHTML = () => {
+    try {
+      const html = `
+        <html>
+          <head>
+            <meta charset="UTF-8" />
+            <title>${title} - README</title>
+          </head>
+          <body>
+            ${readmeContent}
+          </body>
+        </html>
+      `;
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'README.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error('Failed to download HTML');
+    }
+  };
+
+  const downloadPDF = () => {
+    try {
+      const element = document.createElement('div');
+      element.innerHTML = readmeContent;
+      html2pdf()
+        .from(element)
+        .set({
+          margin: 1,
+          filename: 'README.pdf',
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        })
+        .save();
+    } catch {
+      toast.error('Failed to export PDF');
+    }
+  };
+
+  const handleExport = (option: string) => {
+    if (option === 'markdown') {
+      downloadMarkdown();
+    } else if (option === 'html') {
+      downloadHTML();
+    } else if (option === 'pdf') {
+      downloadPDF();
+    }
+    setExportOption(""); // reset selection
+  };
+
+  // Copy button
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(readmeContent);
@@ -211,7 +269,6 @@ export default function Home() {
             v0.1
           </Badge>
         </div>
-
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={toggleTheme}>
             {resolvedTheme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
@@ -308,10 +365,22 @@ export default function Home() {
           />
 
           <div className="flex gap-3 border-t-subtle pt-4">
-            <Button onClick={downloadMarkdown} className="flex-1 gap-2">
-              <Download size={16} />
-              Export .md
-            </Button>
+            <Select
+              value={exportOption}
+              onValueChange={(value) => {
+                setExportOption(value);
+                handleExport(value);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Export" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="markdown">Export .md</SelectItem>
+                <SelectItem value="html">Export HTML</SelectItem>
+                <SelectItem value="pdf">Export PDF</SelectItem>
+              </SelectContent>
+            </Select>
             <Button variant="outline" onClick={copyToClipboard} className="flex-1 gap-2">
               <Copy size={16} />
               Copy
@@ -323,7 +392,12 @@ export default function Home() {
           </div>
         </div>
 
-        <PreviewSection content={readmeContent} licenses={Object.values(licenses)} badgeStyle={badgeStyle} />
+        <PreviewSection
+          content={readmeContent}
+          licenses={Object.values(licenses)}
+          badgeStyle={badgeStyle}
+          previewTheme={resolvedTheme || 'light'}
+        />
       </div>
     </main>
   );
