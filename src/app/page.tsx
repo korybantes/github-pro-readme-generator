@@ -120,7 +120,7 @@ export default function Home() {
       <header className="flex items-center justify-between mb-8 pb-4 border-b-subtle">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-semibold">Github PRO Readme Generator</h1>
-          <Badge color="orange">
+          <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-300 hover:text-indigo-900 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300">
             v0.1
           </Badge>
         </div>

@@ -153,7 +153,7 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
         </div>
 
         {(selectedCategory === "GitHub Stats" && (!username || !repo)) && (
-          <p className="text-sm text-muted-foreground">
+          <p className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 flat dark:bg-red-900 dark:text-red-300">
             GitHub badges require username and repository name
           </p>
         )}
