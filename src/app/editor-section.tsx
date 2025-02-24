@@ -146,13 +146,14 @@ export function EditorSection({ ...props }: EditorSectionProps) {
         checked={props.openSections.project}
         onCheckedChange={() => toggleSection("project")}
         />
-  </div>
+    </div>
 
           {/* Content conditionally rendered */}
           {props.openSections.project && (
             <div className="space-y-4 pt-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+                <div className="space-y-2 display:inline-block">
+                  <span className="bg-primary w-3 h-3 rounded-full" />
                   <Label className="flex items-center gap-2">
                     Project Title
                     <span className="text-destructive">*</span>
@@ -161,7 +162,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                     value={props.title}
                     onChange={(e) => props.setTitle(e.target.value)}
                     placeholder="My Awesome Project"
-                    className="w-full"
+                    className="w-full display:inline-block"
                     required
                   />
                 </div>

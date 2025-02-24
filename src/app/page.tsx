@@ -25,50 +25,6 @@ const licenses = {
   ISC: '[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)',
 };
 
-// Templates for pre-filling the editor.
-const TEMPLATES: { [key: string]: Partial<{
-  title: string;
-  description: string;
-  installation: string;
-  usage: string;
-  features: string[];
-  development: string;
-  contributing: string;
-  tests: string;
-}> } = {
-  Minimalist: {
-    title: "My Project",
-    description: "A short and sweet project description.",
-    installation: "npm install",
-    usage: "npm start",
-    features: ["Simple", "Easy to use"],
-    contributing: "Please fork and submit pull requests.",
-    tests: "npm test",
-  },
-  Detailed: {
-    title: "My Detailed Project",
-    description:
-      "This project is designed to solve problem X with a comprehensive set of features.",
-    installation: "git clone ...\nnpm install",
-    usage: "Detailed usage instructions go here.",
-    features: ["Feature A", "Feature B", "Feature C"],
-    development: "Run the development server with npm run dev.",
-    contributing: "Open issues, fork, and submit PRs.",
-    tests: "Run tests using npm test",
-  },
-  Technical: {
-    title: "Technical Project",
-    description:
-      "An advanced project that leverages cutting-edge technologies.",
-    installation: "Clone the repo, install dependencies with yarn.",
-    usage: "Refer to the technical documentation.",
-    features: ["High Performance", "Scalable", "Modular"],
-    development: "Use Docker and Kubernetes for local development.",
-    contributing: "Follow our coding guidelines.",
-    tests: "Automated tests are run via CI/CD pipeline.",
-  },
-};
-
 interface Deployment { provider: string; url: string; }
 
 interface HomeState {
@@ -278,23 +234,6 @@ export default function Home() {
     }
   };
 
-  // Template selection handler
-  const handleTemplateSelect = (template: string) => {
-    setSelectedTemplate(template);
-    const t = TEMPLATES[template];
-    if (t) {
-      // Update only fields provided by the template
-      if (t.title !== undefined) setTitle(t.title);
-      if (t.description !== undefined) setDescription(t.description);
-      if (t.installation !== undefined) setInstallation(t.installation);
-      if (t.usage !== undefined) setUsage(t.usage);
-      if (t.features !== undefined) setFeatures(t.features);
-      if (t.development !== undefined) setDevelopment(t.development);
-      if (t.contributing !== undefined) setContributing(t.contributing);
-      if (t.tests !== undefined) setTests(t.tests);
-    }
-  };
-
   const generateReadme = useCallback(() => {
     try {
       const sections = [];
@@ -487,22 +426,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Template Selection Dropdown */}
-      <div className="mb-6">
-        <Label>Template</Label>
-        <select
-          value={selectedTemplate}
-          onChange={(e) => handleTemplateSelect(e.target.value)}
-          className="border p-2 rounded w-full"
-        >
-          <option value="">Select a Template</option>
-          {Object.keys(TEMPLATES).map((template) => (
-            <option key={template} value={template}>
-              {template}
-            </option>
-          ))}
-        </select>
-      </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="flex flex-col gap-6">
