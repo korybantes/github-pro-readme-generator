@@ -13,7 +13,15 @@ import { CSS } from "@dnd-kit/utilities";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { useState } from "react";
 
-const SortableItem = ({ id, children, onRemove }: { id: string; children: React.ReactNode; onRemove: () => void }) => {
+const SortableItem = ({
+  id,
+  children,
+  onRemove,
+}: {
+  id: string;
+  children: React.ReactNode;
+  onRemove: () => void;
+}) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition };
 
@@ -65,29 +73,32 @@ interface EditorSectionProps {
     badges: boolean;
     documentation: boolean;
   };
-  setOpenSections: React.Dispatch<React.SetStateAction<{
-    project: boolean;
-    badges: boolean;
-    documentation: boolean;
-  }>>;
+  setOpenSections: React.Dispatch<
+    React.SetStateAction<{
+      project: boolean;
+      badges: boolean;
+      documentation: boolean;
+    }>
+  >;
 }
 
 export function EditorSection({ ...props }: EditorSectionProps) {
-  const addFeature = () => props.setFeatures([...props.features, '']);
-  const removeFeature = (index: number) => props.setFeatures(props.features.filter((_, i) => i !== index));
+  const addFeature = () => props.setFeatures([...props.features, ""]);
+  const removeFeature = (index: number) =>
+    props.setFeatures(props.features.filter((_, i) => i !== index));
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
     if (active.id !== over.id) {
-      const oldIndex = props.features.findIndex(f => f === active.id);
-      const newIndex = props.features.findIndex(f => f === over.id);
+      const oldIndex = props.features.findIndex((f) => f === active.id);
+      const newIndex = props.features.findIndex((f) => f === over.id);
       const newFeatures = arrayMove(props.features, oldIndex, newIndex);
       props.setFeatures(newFeatures);
     }
   };
 
   const toggleSection = (section: keyof typeof props.openSections) => {
-    props.setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+    props.setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
   return (
@@ -95,17 +106,19 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       {/* Project Metadata Section */}
       <Card className="p-6">
         <div className="space-y-4">
+          {/* Header with switch always visible */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
               Project Setup
             </h3>
-            <Switch 
+            <Switch
               checked={props.openSections.project}
-              onCheckedChange={() => toggleSection('project')}
+              onCheckedChange={() => toggleSection("project")}
             />
           </div>
 
+          {/* Content conditionally rendered */}
           {props.openSections.project && (
             <div className="space-y-4 pt-4">
               <div className="grid grid-cols-2 gap-4">
@@ -182,6 +195,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       {/* Badge Selector Section */}
       <Card className="p-6">
         <div className="space-y-4">
+          {/* Header with switch always visible */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
@@ -189,10 +203,11 @@ export function EditorSection({ ...props }: EditorSectionProps) {
             </h3>
             <Switch
               checked={props.openSections.badges}
-              onCheckedChange={() => toggleSection('badges')}
+              onCheckedChange={() => toggleSection("badges")}
             />
           </div>
 
+          {/* Content conditionally rendered */}
           {props.openSections.badges && (
             <div className="pt-4">
               <BadgeSelector
@@ -209,6 +224,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       {/* Documentation Sections */}
       <Card className="p-6">
         <div className="space-y-4">
+          {/* Header with switches always visible */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
@@ -224,11 +240,12 @@ export function EditorSection({ ...props }: EditorSectionProps) {
               </div>
               <Switch
                 checked={props.openSections.documentation}
-                onCheckedChange={() => toggleSection('documentation')}
+                onCheckedChange={() => toggleSection("documentation")}
               />
             </div>
           </div>
 
+          {/* Content conditionally rendered */}
           {props.openSections.documentation && (
             <div className="space-y-6 pt-4">
               <SectionBlock title="Installation" value={props.installation} setValue={props.setInstallation} />
@@ -245,11 +262,7 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                 <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                   <div className="space-y-2">
                     {props.features.map((feature, index) => (
-                      <SortableItem 
-                        key={index} 
-                        id={feature}
-                        onRemove={() => removeFeature(index)}
-                      >
+                      <SortableItem key={index} id={feature} onRemove={() => removeFeature(index)}>
                         <Input
                           value={feature}
                           onChange={(e) => props.updateFeature(index, e.target.value)}
@@ -273,7 +286,15 @@ export function EditorSection({ ...props }: EditorSectionProps) {
   );
 }
 
-const SectionBlock = ({ title, value, setValue }: { title: string; value: string; setValue: (v: string) => void }) => (
+const SectionBlock = ({
+  title,
+  value,
+  setValue,
+}: {
+  title: string;
+  value: string;
+  setValue: (v: string) => void;
+}) => (
   <div className="space-y-2">
     <Label className="text-lg font-medium">{title}</Label>
     <Textarea
