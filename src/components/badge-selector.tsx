@@ -131,7 +131,7 @@ export function BadgeSelector({ badges, setBadges, username, repo }: {
       <div className="space-y-4">
         {/* Badge Selection Section */}
         <div>
-          <Label className="mb-1 block">Badge Selection</Label>
+          <Label className="mb-1 block">Badge Selection</Label> <span className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">Beta</span>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="w-full border-b-subtle">

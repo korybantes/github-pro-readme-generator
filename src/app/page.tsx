@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
+import { Header } from '@/components/ui/header';
 import { EditorSection } from './editor-section';
 import { PreviewSection } from './preview-section';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 // Import marked for PDF conversion
 import { marked } from 'marked';
+//header
+
 
 const licenses = {
   MIT: '[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)',
@@ -443,42 +446,7 @@ export default function Home() {
 
   return (
     <main className="container mx-auto p-4 max-w-7xl">
-      <header className="flex items-center justify-between mb-8 pb-4 border-b-subtle">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold">Github PRO Readme Generator</h1>
-          <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-300 hover:text-indigo-900 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300 ">
-            v0.1
-          </Badge>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {resolvedTheme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
-          </Button>
-          <Button variant="outline" asChild>
-            <a
-              href={`https://github.com/korybantes/github-pro-readme-generator`}
-              target="_blank"
-              className="flex items-center gap-2"
-            >
-              <Star size={16} />
-              <span>Star on GitHub</span>
-            </a>
-          </Button>
-          <div className="tooltip">
-            <Button variant="outline" asChild>
-              <a
-                href="https://github.com/korybantes"
-                target="_blank"
-                className="flex items-center gap-2"
-              >
-                <Github size={16} />
-                <span>korybantes</span>
-              </a>
-            </Button>
-            <span className="tooltip-text">Follow me on GitHub</span>
-          </div>
-        </div>
-      </header>
+      <Header />
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="flex flex-col gap-6">
           <div className="grid grid-cols-2 gap-4">

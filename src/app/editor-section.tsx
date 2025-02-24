@@ -288,8 +288,8 @@ export function EditorSection({ ...props }: EditorSectionProps) {
               {/* Deployment Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label className="text-lg font-medium">Deployments
-                  <span className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">with v0.2</span>
+                  <Label className="text-lg font-medium">Deployments 
+                  <span className="rounded bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">with v0.2</span>
                   </Label> 
                   <Button variant="outline" onClick={addDeployment} className="gap-2 disabled border-b-subtle" disabled >
                     <Plus size={16} />
