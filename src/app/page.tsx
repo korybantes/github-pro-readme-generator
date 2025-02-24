@@ -133,7 +133,7 @@ export default function Home() {
           {/* Star on GitHub Button */}
           <Button variant="outline" asChild>
             <a
-              href={`https://github.com/${username}/${repo}`}
+              href={`https://github.com/korybantes/github-pro-readme-generator`}
               target="_blank"
               className="flex items-center gap-2"
             >
