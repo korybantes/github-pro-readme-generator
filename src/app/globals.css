@@ -91,10 +91,6 @@
     pre {
       @apply p-4 rounded-lg border-subtle bg-muted/50;
     }
-
-    img {
-      @apply rounded-xl border-subtle my-6;
-    }
   }
 }
 
