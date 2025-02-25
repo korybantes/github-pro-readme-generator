@@ -2,19 +2,31 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { BadgeSelector } from "@/components/badge-selector";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash, GripVertical } from "lucide-react";
+import { Plus, Trash, GripVertical, Star, Brain } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { useState, Dispatch, SetStateAction } from "react";
 
 // New constant for deployment provider options
-const DEPLOYMENT_PROVIDERS = ["Vercel", "Netlify", "GitHub Pages", "Heroku", "Firebase"];
+const DEPLOYMENT_PROVIDERS = [
+  "Vercel",
+  "Netlify",
+  "GitHub Pages",
+  "Heroku",
+  "Firebase",
+];
 
 const SortableItem = ({
   id,
@@ -25,16 +37,26 @@ const SortableItem = ({
   children: React.ReactNode;
   onRemove: () => void;
 }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition };
 
   return (
     <div ref={setNodeRef} style={style} className="flex items-center gap-2 group">
-      <button {...attributes} {...listeners} className="cursor-grab text-muted-foreground hover:text-foreground">
+      <button
+        {...attributes}
+        {...listeners}
+        className="cursor-grab text-muted-foreground hover:text-foreground"
+      >
         <GripVertical size={16} />
       </button>
       <div className="flex-1">{children}</div>
-      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100" onClick={onRemove}>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="opacity-0 group-hover:opacity-100"
+        onClick={onRemove}
+      >
         <Trash size={16} />
       </Button>
     </div>
@@ -82,7 +104,7 @@ interface EditorSectionProps {
     project: boolean;
     badges: boolean;
     documentation: boolean;
-    media: boolean; // media deployment
+    media: boolean; // media & deployment
   };
   setOpenSections: React.Dispatch<
     React.SetStateAction<{
@@ -92,7 +114,7 @@ interface EditorSectionProps {
       media: boolean;
     }>
   >;
-  //new props for media and deployment sections:
+  // New props for media and deployment sections:
   gifUrl: string;
   setGifUrl: (url: string) => void;
   deployments: Deployment[];
@@ -102,6 +124,37 @@ interface EditorSectionProps {
 }
 
 export function EditorSection({ ...props }: EditorSectionProps) {
+  // AI customization states
+  const [includeInstallation, setIncludeInstallation] = useState(false);
+  const [includeUsage, setIncludeUsage] = useState(false);
+  const [includeFeatures, setIncludeFeatures] = useState(false);
+
+  // Function to generate AI description via an API endpoint.
+  const generateAIDescription = async () => {
+    try {
+      const response = await fetch("/api/generate-description", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: props.title,
+          includeInstallation,
+          includeUsage,
+          includeFeatures,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to generate description");
+      }
+      const data = await response.json();
+      props.setDescription(data.description);
+    } catch (error) {
+      console.error(error);
+      // Optionally, display an error message to the user.
+    }
+  };
+
   const addFeature = () => props.setFeatures([...props.features, ""]);
   const removeFeature = (index: number) =>
     props.setFeatures(props.features.filter((_, i) => i !== index));
@@ -144,29 +197,28 @@ export function EditorSection({ ...props }: EditorSectionProps) {
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
-                Project Setup
+              Project Setup
             </h3>
-      <Switch
-        checked={props.openSections.project}
-        onCheckedChange={() => toggleSection("project")}
-        />
-    </div>
+            <Switch
+              checked={props.openSections.project}
+              onCheckedChange={() => toggleSection("project")}
+            />
+          </div>
 
           {/* Content conditionally rendered */}
           {props.openSections.project && (
             <div className="space-y-4 pt-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2 display:inline-block">
+                <div className="space-y-2 inline-block">
                   <span className="bg-primary w-3 h-3 rounded-full" />
                   <Label className="flex items-center gap-2">
-                    Project Title
-                    <span className="text-destructive">*</span>
+                    Project Title <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     value={props.title}
                     onChange={(e) => props.setTitle(e.target.value)}
                     placeholder="My Awesome Project"
-                    className="w-full display:inline-block border-b-subtle"
+                    className="w-full inline-block border-b-subtle"
                     required
                   />
                 </div>
@@ -182,6 +234,20 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                 </div>
               </div>
 
+              {/* AI Description Generation Section */}
+              <div className="border p-4 rounded-md shadow-sm mb-4 bg-white dark:bg-gray-900 border-b-s">
+                <h3 className="text-lg font-bold mb-2 text-gray-900 dark:text-white">
+                  Generate AI Description <span className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">with v0.2</span>
+                </h3>
+                <Button
+                      
+                  className="w-full relative overflow-hidden rounded-md text-white font-medium transition-all duration-300 bg-gradient-to-r from-purple-500 via-blue-500 to-teal-500 hover:from-purple-600 hover:via-blue-600 hover:to-teal-600 shadow-lg shadow-purple-500/30"
+                     disabled >   
+                    Generate Description <Brain size={16} className="ml-2" />
+                </Button>
+              </div>
+
+              {/* Description Input */}
               <div className="space-y-2">
                 <Label>Description</Label>
                 <Textarea
@@ -230,7 +296,6 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       {/* Badge Selector Section */}
       <Card className="p-6 border-b-subtle">
         <div className="space-y-4">
-          {/* Header with switch always visible */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
@@ -242,8 +307,6 @@ export function EditorSection({ ...props }: EditorSectionProps) {
               className="border-b-subtle"
             />
           </div>
-
-          {/* Content conditionally rendered */}
           {props.openSections.badges && (
             <div className="pt-4 border-b-subtle">
               <BadgeSelector
@@ -260,7 +323,6 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       {/* Media & Deployment Section */}
       <Card className="p-6 border-b-subtle">
         <div className="space-y-4">
-          {/* Header with switch always visible */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
@@ -273,7 +335,6 @@ export function EditorSection({ ...props }: EditorSectionProps) {
           </div>
           {props.openSections.media && (
             <div className="space-y-6 pt-4">
-              {/* Demo GIF Section */}
               <div className="space-y-2">
                 <Label>Demo GIF URL</Label>
                 <Input
@@ -284,14 +345,20 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                   className="w-full border-b-subtle"
                 />
               </div>
-
-              {/* Deployment Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label className="text-lg font-medium">Deployments 
-                  <span className="rounded bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-red-900 dark:text-red-300">with v0.2</span>
-                  </Label> 
-                  <Button variant="outline" onClick={addDeployment} className="gap-2 disabled border-b-subtle" disabled >
+                  <Label className="text-lg font-medium">
+                    Deployments{" "}
+                    <span className="rounded bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-red-900 dark:text-red-300">
+                      with v0.2
+                    </span>
+                  </Label>
+                  <Button
+                    variant="outline"
+                    onClick={addDeployment}
+                    className="gap-2 disabled border-b-subtle"
+                    disabled
+                  >
                     <Plus size={16} />
                     Add Deployment
                   </Button>
@@ -301,7 +368,10 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                     <Select
                       value={deployment.provider}
                       onValueChange={(value) =>
-                        updateDeployment(index, { provider: value, url: deployment.url })
+                        updateDeployment(index, {
+                          provider: value,
+                          url: deployment.url,
+                        })
                       }
                     >
                       <SelectTrigger className="w-full border-b-subtle">
@@ -318,13 +388,20 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                     <Input
                       value={deployment.url}
                       onChange={(e) =>
-                        updateDeployment(index, { provider: deployment.provider, url: e.target.value })
+                        updateDeployment(index, {
+                          provider: deployment.provider,
+                          url: e.target.value,
+                        })
                       }
                       placeholder="https://example.com"
                       type="url"
                       className="w-full border-b-subtle"
                     />
-                    <Button variant="ghost" size="sm" onClick={() => removeDeployment(index)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeDeployment(index)}
+                    >
                       <Trash size={16} />
                     </Button>
                   </div>
@@ -338,7 +415,6 @@ export function EditorSection({ ...props }: EditorSectionProps) {
       {/* Documentation Sections */}
       <Card className="p-6 border-b-subtle">
         <div className="space-y-4">
-          {/* Header with switches always visible */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               <span className="bg-primary w-2 h-2 rounded-full" />
@@ -347,7 +423,10 @@ export function EditorSection({ ...props }: EditorSectionProps) {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <Label>Table of Contents</Label>
-                <Switch checked={props.tocEnabled} onCheckedChange={props.setTocEnabled} />
+                <Switch
+                  checked={props.tocEnabled}
+                  onCheckedChange={props.setTocEnabled}
+                />
               </div>
               <Switch
                 checked={props.openSections.documentation}
@@ -355,17 +434,26 @@ export function EditorSection({ ...props }: EditorSectionProps) {
               />
             </div>
           </div>
-
-          {/* Content conditionally rendered */}
           {props.openSections.documentation && (
             <div className="space-y-6 pt-4 border-b-subtle">
-              <SectionBlock title="Installation" value={props.installation} setValue={props.setInstallation} />
-              <SectionBlock title="Usage" value={props.usage} setValue={props.setUsage} />
-
+              <SectionBlock
+                title="Installation"
+                value={props.installation}
+                setValue={props.setInstallation}
+              />
+              <SectionBlock
+                title="Usage"
+                value={props.usage}
+                setValue={props.setUsage}
+              />
               <div className="space-y-4 border-b-subtle">
                 <div className="flex items-center justify-between border-b-subtle">
                   <Label className="text-lg font-medium">Features</Label>
-                  <Button variant="outline" onClick={addFeature} className="gap-2 border-b-subtle">
+                  <Button
+                    variant="outline"
+                    onClick={addFeature}
+                    className="gap-2 border-b-subtle"
+                  >
                     <Plus size={16} />
                     Add Feature
                   </Button>
@@ -385,10 +473,21 @@ export function EditorSection({ ...props }: EditorSectionProps) {
                   </div>
                 </DndContext>
               </div>
-
-              <SectionBlock title="Development" value={props.development} setValue={props.setDevelopment} />
-              <SectionBlock title="Contributing" value={props.contributing} setValue={props.setContributing} />
-              <SectionBlock title="Tests" value={props.tests} setValue={props.setTests} />
+              <SectionBlock
+                title="Development"
+                value={props.development}
+                setValue={props.setDevelopment}
+              />
+              <SectionBlock
+                title="Contributing"
+                value={props.contributing}
+                setValue={props.setContributing}
+              />
+              <SectionBlock
+                title="Tests"
+                value={props.tests}
+                setValue={props.setTests}
+              />
             </div>
           )}
         </div>

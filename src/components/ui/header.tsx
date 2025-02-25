@@ -50,7 +50,7 @@ export const Header = () => {
                 className="flex items-center gap-2"
               >
                 <Star size={16} />
-                <span>Star</span>
+                <span>Star on Github</span>
               </a>
             </Button>
 
@@ -64,7 +64,7 @@ export const Header = () => {
                   className="flex items-center gap-2"
                 >
                   <Star size={16} />
-                  <span>Star</span>
+                  <span>Star on Github</span>
                 </a>
               </Button>
               <Button variant="outline" asChild>
@@ -75,7 +75,7 @@ export const Header = () => {
                   className="flex items-center gap-2"
                 >
                   <Github size={16} />
-                  <span>Follow Me</span>
+                  <span>korybantes</span>
                 </a>
               </Button>
               <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-300 hover:text-indigo-900 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300">
