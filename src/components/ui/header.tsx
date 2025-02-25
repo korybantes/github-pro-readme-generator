@@ -16,55 +16,73 @@ export const Header = () => {
   };
 
   return (
-    <header className="flex items-center justify-between mb-8 pb-4 border-b-subtle">
-      <div className="flex items-center gap-3">
-        {/* Logo with theme support */}
-        <Image
-          src={resolvedTheme === "dark" ? logoWhite : logo}
-          alt="Logo"
-          width={32}
-          height={32}
-          className="h-8 w-8"
-        />
-        <h1 className="text-2xl font-semibold">read-me.pro - README.md Creator</h1>
-        <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-300 hover:text-indigo-900 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300">
-          v0.1
-        </Badge>
-      </div>
-      <a href="https://www.producthunt.com/posts/read-me-pro-professional-readme-md?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-read&#0045;me&#0045;pro&#0045;professional&#0045;readme&#0045;md" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=911304&theme=light&t=1740442357180" alt="read&#0045;me&#0046;pro&#0032;&#0045;&#0032;Professional&#0032;README&#0046;md - Real&#0045;Time&#0032;README&#0046;md&#0032;file&#0032;creation&#0032;without&#0032;any&#0032;effort&#0046; | Product Hunt" style={{ width: '250px', height: '40px' }} width="350" height="40" /></a>
-      <div className="flex items-center gap-3">
-        {/* Theme Toggle Button */}
-        <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
-          {resolvedTheme === "dark" ? <Moon size={18} /> : <Sun size={18} />}
-        </Button>
+    <header className="w-full bg-background border-b-subtle">
+      <div className="max-w-screen-xl mx-auto px-4 py-3 flex items-center justify-between">
+        {/* Left Side: Logo and Title */}
+        <div className="flex items-center gap-3 border-b-subtle pb-1">
+          <Image
+            src={resolvedTheme === "dark" ? logoWhite : logo}
+            alt="Logo"
+            width={32}
+            height={32}
+            className="h-8 w-8"
+          />
+          <h1 className="text-lg sm:text-xl font-semibold">
+            read-me.pro - README.md Creator
+          </h1>
+          <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-300 hover:text-indigo-900 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300">
+            v0.1
+          </Badge>
+        </div>
 
-        {/* Star on GitHub Button */}
-        <Button variant="outline" asChild>
-          <a
-            href="https://github.com/korybantes/github-pro-readme-generator"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2"
-          >
-            <Star size={16} />
-            <span>Star on GitHub</span>
-          </a>
-        </Button>
-
-        {/* Follow Me on GitHub Button with Tooltip */}
-        <div className="tooltip">
-          <Button variant="outline" asChild>
-            <a
-              href="https://github.com/korybantes"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <Github size={16} />
-              <span>korybantes</span>
-            </a>
+        {/* Right Side: Buttons */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Theme Toggle */}
+          <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+            {resolvedTheme === "dark" ? <Moon size={18} /> : <Sun size={18} />}
           </Button>
-          <span className="tooltip-text">Follow me on GitHub</span>
+
+          {/* GitHub Buttons */}
+          <div className="flex gap-2">
+            {/* Mobile: Show "Star" only */}
+            <Button variant="outline" className="sm:hidden" asChild>
+              <a
+                href="https://github.com/korybantes/read-me-pro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                <Star size={16} />
+                <span>Star</span>
+              </a>
+            </Button>
+
+            {/* Desktop: Show Star + Follow Buttons */}
+            <div className="hidden sm:flex gap-2">
+              <Button variant="outline" asChild>
+                <a
+                  href="https://github.com/korybantes/github-pro-readme-generator"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Star size={16} />
+                  <span>Star</span>
+                </a>
+              </Button>
+              <Button variant="outline" asChild>
+                <a
+                  href="https://github.com/korybantes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Github size={16} />
+                  <span>Follow Me</span>
+                </a>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </header>

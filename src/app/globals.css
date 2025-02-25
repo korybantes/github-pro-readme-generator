@@ -18,11 +18,10 @@
     --ring: 215 20.2% 65.1%;
     --primary: 224 71% 4%;
     --primary-foreground: 0 0% 100%;
-    --popover: 0 0% 100%;    
-    --popover-foreground: 222.2 84% 4.9%; 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
     --destructive: 0 100% 50%;
     --destructive-foreground: 0 100% 50%;
-
   }
 
   .dark {
@@ -41,8 +40,8 @@
     --ring: 212.7 26.8% 83.9%;
     --primary: 3 6 85;
     --primary-foreground: 222.2 84% 4.9%;
-    --popover: 224 71% 4%;      
-    --popover-foreground: 210 40% 98%; 
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 40% 98%;
   }
 }
 
@@ -56,7 +55,7 @@
   .bg-border-subtle {
     background-color: hsl(var(--border-subtle));
   }
-  
+
   .border-x-subtle {
     @apply border-x border-border/20;
   }
@@ -100,7 +99,7 @@
 
 /* DropdownMenu */
 .DropdownMenuSeparator {
-  @apply -mx-1 my-1 h-px bg-border-subtle; 
+  @apply -mx-1 my-1 h-px bg-border-subtle;
 }
 body {
   @apply bg-background text-foreground min-h-screen antialiased;
@@ -111,13 +110,12 @@ body {
   background-color: hsl(var(--popover));
   color: hsl(var(--popover-foreground));
   cursor: pointer;
-  
+
   /* Animation styles */
   @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0;
   @apply data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95;
   @apply data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2;
   @apply data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2;
-  
 }
 
 .DropdownMenuSubContent {
@@ -129,7 +127,7 @@ body {
 .DropdownMenuItem {
   @apply relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors;
   @apply hover:bg-accent/20 focus:bg-accent focus:text-accent-foreground;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .DropdownMenuCheckboxItem,
@@ -155,7 +153,7 @@ body {
   @apply hover:bg-accent/30;
 }
 
-/*tooltip*/
+/* Tooltip */
 .tooltip {
   position: relative;
   display: inline-block;
@@ -171,9 +169,9 @@ body {
   padding: 4px 8px;
   position: absolute;
   z-index: 1;
-  top: 125%; /* Position below the button */
+  top: 125%; 
   left: 50%;
-  margin-left: -60px; /* Center the tooltip */
+  margin-left: -60px; 
   opacity: 0;
   transition: opacity 0.3s;
   font-size: 0.75rem;
@@ -181,21 +179,57 @@ body {
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-family: 'Inter', sans-serif;
-  font-weight: 500;
 }
 
 .tooltip .tooltip-text::after {
   content: "";
   position: absolute;
-  bottom: 100%; /* Arrow points upward */
+  bottom: 100%; 
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent #333 transparent; /* Arrow color */
+  border-color: transparent transparent #333 transparent; 
 }
 
 .tooltip:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  body {
+    @apply p-2;
+  }
+
+  /* Adjust container padding*/
+  .container {
+    @apply px-4;
+  }
+
+  .prose h1 {
+    @apply text-2xl;
+  }
+
+  .prose h2 {
+    @apply text-xl;
+  }
+
+  .prose h3 {
+    @apply text-lg;
+  }
+
+  /* Dropdown Menu  */
+  .DropdownMenuContent {
+    @apply min-w-[6rem];
+  }
+
+  /* Tooltip adjustments for smaller screens */
+  .tooltip .tooltip-text {
+    width: auto;
+    left: 50%;
+    margin-left: -50%;
+    font-size: 0.65rem;
+  }
 }
