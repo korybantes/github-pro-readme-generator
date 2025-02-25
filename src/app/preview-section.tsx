@@ -103,9 +103,9 @@ export function PreviewSection({ content, licenses, badgeStyle, previewTheme }: 
   }, [content]);
   return (
     <div className={`space-y-6 ${previewTheme === 'dark' ? 'dark' : ''}`}>
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
+      <Card className="p-6 border-b-subtle">
+        <div className="flex items-center justify-between mb-4 border-b-subtle">
+          <div className="flex items-center gap-2 border-b-subtle">
             <h3 className="text-lg font-semibold">Rendered Preview</h3>
             <Badge variant="outline">v0.1</Badge>
           </div>
@@ -140,8 +140,8 @@ export function PreviewSection({ content, licenses, badgeStyle, previewTheme }: 
         </div>
       </Card>
 
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
+      <Card className="p-6 border-b-subtle">
+        <div className="flex items-center justify-between mb-4 border-b-subtle">
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-semibold">Raw Markdown</h3>
             <Badge variant="secondary">GitHub Flavored</Badge>

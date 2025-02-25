@@ -30,9 +30,6 @@ export const Header = () => {
           <h1 className="text-lg sm:text-xl font-semibold">
             read-me.pro - README.md Creator
           </h1>
-          <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-300 hover:text-indigo-900 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300">
-            v0.1
-          </Badge>
         </div>
 
         {/* Right Side: Buttons */}
@@ -81,6 +78,9 @@ export const Header = () => {
                   <span>Follow Me</span>
                 </a>
               </Button>
+              <Badge className="bg-indigo-100 text-indigo-800 hover:bg-indigo-300 hover:text-indigo-900 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300">
+            v0.1
+          </Badge>
             </div>
           </div>
         </div>
