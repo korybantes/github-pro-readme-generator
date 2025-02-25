@@ -31,6 +31,7 @@ export const Header = () => {
           v0.1
         </Badge>
       </div>
+      <a href="https://www.producthunt.com/posts/read-me-pro-professional-readme-md?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-read&#0045;me&#0045;pro&#0045;professional&#0045;readme&#0045;md" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=911304&theme=light&t=1740442357180" alt="read&#0045;me&#0046;pro&#0032;&#0045;&#0032;Professional&#0032;README&#0046;md - Real&#0045;Time&#0032;README&#0046;md&#0032;file&#0032;creation&#0032;without&#0032;any&#0032;effort&#0046; | Product Hunt" style={{ width: '250px', height: '40px' }} width="350" height="40" /></a>
       <div className="flex items-center gap-3">
         {/* Theme Toggle Button */}
         <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
