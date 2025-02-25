@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 // Metadata is server-side only
 export const metadata: Metadata = {
-  title: 'Github PRO Readme Editor',
+  title: 'read-me.pro - Github PRO Readme Editor',
   description: 'Professional README Editor with dark mode and GitHub integration',
 };
 
