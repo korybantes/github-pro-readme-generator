@@ -16,19 +16,19 @@ export async function POST(request: Request) {
 
     console.log("Generated prompt:", prompt);
 
-    // Use Gemini to generate the description
+    // gemini description prompt
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     const result = await model.generateContent(prompt);
 
     console.log("Full API response:", result);
 
-    // Ensure result.response is defined
+    // result.response
     const response = result?.response;
     if (!response) {
       throw new Error("Gemini API response is undefined.");
     }
 
-    // Extract text safely
+    // extracting text 👍🏻
     const text = response.text ? response.text() : "No text available.";
 
     return NextResponse.json({ description: text.trim() });
